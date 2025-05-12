@@ -1,0 +1,98 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 10px;
+  width: 420px;
+  height: 420px;
+  margin: 20px auto;
+  position: relative;
+  background-color: transparent;
+  border: none;
+}
+
+.cell {
+  width: 80px; /* Increase circle size */
+  height: 80px; /* Increase circle size */
+  fill: white;
+  stroke: black;
+  cursor: pointer;
+  position: absolute;
+}
+
+.cell:hover {
+  fill: #ddd;
+}
+
+.line {
+  position: absolute;
+}
+
+.cell.player1 {
+  fill: #DC143C;
+}
+
+.cell.player2 {
+  fill: #00CED1;
+}
+
+.gameInfo {
+  margin-bottom: 20px;
+  text-align: center;
+  color: white;
+}
+
+.gameInfo h2 {
+  margin-bottom: 10px;
+}
+
+.gameInfo table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  color: white;
+}
+
+.gameInfo th, .gameInfo td {
+  border: 1px solid white;
+  padding: 5px 10px;
+}
+
+.gameInfo th {
+  background-color: #333;
+}
+
+.gameInfo td {
+  text-align: center;
+}
+
+.selected {
+  stroke: yellow; /* Highlight the selected piece */
+  stroke-width: 3px;
+}
+
+.millMessage {
+  color: yellow;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.gameOverMessage {
+  color: #ff4500;
+  font-weight: bold;
+  font-size: 1.2em;
+  margin: 20px 0;
+  padding: 10px;
+  border: 2px solid #ff4500;
+  border-radius: 5px;
+  background-color: rgba(255, 69, 0, 0.1);
+}
+
+.flyingMessage {
+  color: #1e90ff;
+  font-weight: bold;
+  margin-top: 10px;
+  padding: 5px;
+  border: 1px dashed #1e90ff;
+  border-radius: 3px;
+  background-color: rgba(30, 144, 255, 0.1);
+}
