@@ -68,31 +68,73 @@
 .selected {
   stroke: yellow; /* Highlight the selected piece */
   stroke-width: 3px;
+  filter: drop-shadow(0 0 4px yellow);
 }
 
 .millMessage {
-  color: yellow;
+  color: #FFD700;
   font-weight: bold;
-  margin-top: 10px;
+  margin: 10px 0;
 }
 
 .gameOverMessage {
-  color: #ff4500;
+  color: #FF6347;
   font-weight: bold;
-  font-size: 1.2em;
-  margin: 20px 0;
+  margin: 10px 0;
   padding: 10px;
-  border: 2px solid #ff4500;
   border-radius: 5px;
-  background-color: rgba(255, 69, 0, 0.1);
+  background-color: rgba(255, 99, 71, 0.1);
 }
 
 .flyingMessage {
-  color: #1e90ff;
+  color: #9370DB;
+  font-style: italic;
+  margin: 10px 0;
+}
+
+.yourTurnMessage {
+  color: #32CD32;
   font-weight: bold;
-  margin-top: 10px;
+  margin: 5px 0;
   padding: 5px;
-  border: 1px dashed #1e90ff;
-  border-radius: 3px;
-  background-color: rgba(30, 144, 255, 0.1);
+  border-radius: 5px;
+  background-color: rgba(50, 205, 50, 0.1);
+}
+
+.waitingMessage {
+  color: #FFD700;
+  font-style: italic;
+  margin: 5px 0;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.turnIndicator {
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #FFD700;
+  transition: all 0.3s ease;
+}
+
+.activePlayer {
+  background-color: rgba(50, 205, 50, 0.2);
+  color: #32CD32;
+  animation: pulseTurn 2s infinite;
+}
+
+@keyframes pulseTurn {
+  0% {
+    box-shadow: 0 0 0 0 rgba(50, 205, 50, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(50, 205, 50, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(50, 205, 50, 0);
+  }
 }

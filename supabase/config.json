@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": {
+      "name": "nine-mens-morris",
+      "schema": "./supabase/schema.sql"
+    }
+  }
+}

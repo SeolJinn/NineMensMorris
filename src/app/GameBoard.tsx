@@ -1,15 +1,51 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './GameBoard.module.css';
 import { positions, connections } from './gameData';
 import { initialGameState, placePiece, movePiece, removeOpponentPiece, GameState } from './gameLogic';
+import { useGameContext } from './lib/gameContext';
 
-const GameBoard = () => {  const [gameState, setGameState] = useState<GameState>(initialGameState);
+interface GameBoardProps {
+  isOnline?: boolean;
+}
+
+const GameBoard = ({ isOnline = false }: GameBoardProps) => {
+  // Use the game context for online games, or local state for offline games
+  const { gameState: onlineGameState, updateGameState: updateOnlineGameState, playerRole } = useGameContext();
+  
+  // Local state for offline play or temporary state when online
+  const [localGameState, setLocalGameState] = useState<GameState>(initialGameState);
   const [selectedPiece, setSelectedPiece] = useState<number | null>(null);
-  const [millMessage, setMillMessage] = useState<string | null>(null);  const handlePlaceOrMovePiece = (index: number): void => {
-    // If game is over, don't allow any moves
-    if (gameState.gameOver) {
+  const [millMessage, setMillMessage] = useState<string | null>(null);
+    // Determine which game state and update function to use
+  const gameState = isOnline ? onlineGameState : localGameState;
+  const setGameState = isOnline 
+    ? (newState: GameState) => {
+        // For online games, only allow updates if it's the player's turn
+        if (playerRole === newState.currentPlayer || 
+            (playerRole === 'Player 1' && gameState.currentPlayer === 'Player 1') || 
+            (playerRole === 'Player 2' && gameState.currentPlayer === 'Player 2')) {
+          updateOnlineGameState(newState);
+        }
+      }
+    : setLocalGameState;
+    
+  // Clear selected piece when game state changes in online mode
+  useEffect(() => {
+    if (isOnline) {
+      setSelectedPiece(null);
+      setMillMessage(null);
+    }
+  }, [isOnline, onlineGameState]);// Check if the current player is allowed to make a move in online mode
+  const canMakeMove = (): boolean => {
+    if (!isOnline) return true;
+    return playerRole === gameState.currentPlayer;
+  };
+
+  const handlePlaceOrMovePiece = (index: number): void => {
+    // If game is over or player can't make a move, don't allow any actions
+    if (gameState.gameOver || (isOnline && !canMakeMove())) {
       return;
     }
     
@@ -100,8 +136,7 @@ const GameBoard = () => {  const [gameState, setGameState] = useState<GameState>
         );
       })}
     </>
-  );
-  const renderGameInfo = () => {
+  );  const renderGameInfo = () => {
     // Count the number of pieces each player has on the board
     const player1PiecesOnBoard = gameState.board.filter(cell => cell === 'Player 1').length;
     const player2PiecesOnBoard = gameState.board.filter(cell => cell === 'Player 2').length;
@@ -111,6 +146,9 @@ const GameBoard = () => {  const [gameState, setGameState] = useState<GameState>
     if (gameState.placementPhaseOver) {
       phase = player1PiecesOnBoard === 3 || player2PiecesOnBoard === 3 ? 'Flying' : 'Movement';
     }
+    
+    // For online mode, show a message if it's not the player's turn
+    const isYourTurn = !isOnline || (playerRole === gameState.currentPlayer);
     
     return (
       <div className={styles.gameInfo}>
@@ -124,6 +162,11 @@ const GameBoard = () => {  const [gameState, setGameState] = useState<GameState>
           <>
             <p>Phase: {phase}</p>
             <p>Current Turn: {currentPlayer}</p>
+            {isOnline && (
+              <p className={isYourTurn ? styles.yourTurnMessage : styles.waitingMessage}>
+                {isYourTurn ? 'Your turn!' : `Waiting for ${currentPlayer}...`}
+              </p>
+            )}
             {millMessage && <p className={styles.millMessage}>{millMessage}</p>}            
             {phase === 'Flying' && (
               <p className={styles.flyingMessage}>
@@ -142,7 +185,7 @@ const GameBoard = () => {  const [gameState, setGameState] = useState<GameState>
             <tr>
               <th>Player</th>
               <th>Pieces Left</th>
-              <th>{gameState.placementPhaseOver ? 'Pieces on Board' : 'Mills Left To Place'}</th>
+              <th>{gameState.placementPhaseOver ? 'Pieces on Board' : 'Pieces Left To Place'}</th>
             </tr>
           </thead>
           <tbody>
@@ -164,6 +207,12 @@ const GameBoard = () => {  const [gameState, setGameState] = useState<GameState>
 
   return (
     <div>
+      {isOnline && (
+        <div className={`${styles.turnIndicator} ${playerRole === gameState.currentPlayer ? styles.activePlayer : ''}`}>
+          {playerRole === gameState.currentPlayer ? "Your Turn" : `${gameState.currentPlayer}'s Turn`}
+          {playerRole === 'Observer' && " (Observing)"}
+        </div>
+      )}
       {renderGameInfo()}
       <svg className={styles.board} viewBox="0 0 420 420">
         {renderLines()}
